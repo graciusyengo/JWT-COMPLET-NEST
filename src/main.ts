@@ -6,7 +6,6 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist:true,
@@ -18,6 +17,7 @@ async function bootstrap() {
 
   console.log(process.env.DB_TYPE)
   console.log(process.env.DB_PASSWORD)
+
 
 
 }

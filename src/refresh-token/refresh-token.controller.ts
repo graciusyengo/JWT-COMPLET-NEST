@@ -11,7 +11,7 @@ export class RefreshTokenController {
   create(@Body() createRefreshTokenDto: CreateRefreshTokenDto) {
     return this.refreshTokenService.create(createRefreshTokenDto);
   }
-
+  
   @Get()
   findAll() {
     return this.refreshTokenService.findAll();

@@ -28,9 +28,13 @@ export class AuthService {
   bcrypt: any;
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+
+    @InjectRepository(ResetToken)
+    private readonly resetTokenRepository: Repository<ResetToken>,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
-    private readonly resetTokenRepository:Repository<ResetToken>,
+   
+
    
     private jwtService: JwtService,
   ) {}
@@ -155,28 +159,39 @@ export class AuthService {
     const user= await this.userRepository.findOne({where:{email:email}})
     console.log(user)
 
-    if(!user){
-      throw new HttpException(`L'utilsateur pas trouver`,HttpStatus.NOT_FOUND)
+    if(user){
+           // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
+      const resetToken = this.generateCustomToken();
+      const expiryDate= new Date()
+      expiryDate.setHours(expiryDate.getHours()+ 1 )
+      console.log(resetToken);
+
+      try {
+        // Attempt to save the reset token
+        await this.resetTokenRepository.save({
+          token: resetToken,
+          userId: user.id,
+          expiryDate,
+        });
+        console.log('Token saved successfully');
+      } catch (error) {
+        console.error('Error saving reset token:', error);
+      }
+
     }
-    const refreshToken = this.generateCustomToken();
-console.log(refreshToken);
-   
- 
-    
 
-    // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
+    return {message:`Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`}
 
+  
     // TODO: SEND THE LINK TO USER BY EMAIL (NODEMAILLER/SES:/ETC..)
 
   
   }
 
-
   generateCustomToken() {
     const part1 = cuid(); // CUID pour la première partie
     const part2 = randomBytes(5).toString('hex'); // Chaîne aléatoire pour la deuxième partie
     const part3 = cuid(); // CUID pour la troisième partie
-  
     return `${part1}-${part2}-${part3}`;
   }
 }

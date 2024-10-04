@@ -11,6 +11,7 @@ import { RefreshToken } from './refresh-token/entities/refresh-token.entity';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ResetTokensModule } from './reset-tokens/reset-tokens.module';
 import { ResetToken } from './reset-tokens/entities/reset-token.entity';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 
 @Module({
@@ -29,6 +30,15 @@ TypeOrmModule.forRootAsync({
     entities: [User,RefreshToken,ResetToken],
     synchronize: false,
   }),
+  }),
+  MailerModule.forRoot({
+    transport: {
+      host: process.env.EMAIL_HOST,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    },
   }),
   UsersModule, AuthModule, RefreshTokenModule, ResetTokensModule],
   controllers: [AppController],

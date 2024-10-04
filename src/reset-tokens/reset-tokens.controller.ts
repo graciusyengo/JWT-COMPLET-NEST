@@ -7,6 +7,7 @@ import { UpdateResetTokenDto } from './dto/update-reset-token.dto';
 export class ResetTokensController {
   constructor(private readonly resetTokensService: ResetTokensService) {}
 
+  
   @Post()
   create(@Body() createResetTokenDto: CreateResetTokenDto) {
     return this.resetTokensService.create(createResetTokenDto);
