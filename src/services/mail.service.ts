@@ -4,24 +4,43 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
-  constructor(private readonly configService: ConfigService) {}
+  private transporter: nodemailer.Transporter;
 
-  mailTransporter() {
-    const transporter = nodemailer.createTransport({
-      host: this.configService.get<string>('MAIL_HOST'), // Utilisez votre hôte SMTP
-      port: this.configService.get<number>('MAIL_PORT'),
+  constructor(private readonly configService: ConfigService) {
+    this.transporter = this.mailTransporter();
+    console.log("Transporter initialized:", this.transporter);
+  }
+  private mailTransporter(): nodemailer.Transporter {
+    return nodemailer.createTransport({
+      host: this.configService.get<string>('MAIL_HOST'), // Utilisez l'hôte SMTP de Mailtrap
+      port: this.configService.get<number>('MAIL_PORT'), // Utilisez le port de Mailtrap
       secure: false, // true pour 465, false pour d'autres ports
       auth: {
-        user: this.configService.get<string>('MAIL_USER'), // Votre email SMTP
-        pass: this.configService.get<string>('MAIL_PASSWORD'), // Votre mot de passe SMTP
+        user: this.configService.get<string>('MAIL_USER'), // Votre username Mailtrap
+        pass: this.configService.get<string>('MAIL_PASSWORD'), // Votre mot de passe Mailtrap
       },
+      tls: {
+        rejectUnauthorized: false // Ignorer les erreurs de certificat
+    }
     });
-
-    return transporter;
   }
 
-  async sendPasswordResetEmail(to:string,token:string) {
-    const resetLink=`http://localhost:3000/reset-password?token=${token}`
+  async sendPasswordResetEmail(to: string, token: string) {
 
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+    const mailOptions = {
+      from:"Auth-Backend server", // Adresse d'expédition fictive
+      to: to, // Adresse du destinataire
+      subject: 'Réinitialisation de mot de passe',
+      html: `<p>La requête pour réinitialiser ton mot de passe. Clique sur ce lien pour réinitialiser ton mot de passe : <a href="${resetLink}">Réinitialiser le mot de passe</a></p>`,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log('Email envoyé avec succès à:', to);
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'email :', error);
+    }
   }
 }

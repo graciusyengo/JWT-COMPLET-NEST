@@ -10,6 +10,7 @@ import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
 import { RefreshTokenModule } from 'src/refresh-token/refresh-token.module';
 import { ResetToken } from 'src/reset-tokens/entities/reset-token.entity';
 import { ResetTokensModule } from 'src/reset-tokens/reset-tokens.module';
+import { MailService } from 'src/services/mail.service';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { ResetTokensModule } from 'src/reset-tokens/reset-tokens.module';
     ResetTokensModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService,MailService],
 })
 export class AuthModule {}

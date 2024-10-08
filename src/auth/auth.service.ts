@@ -17,11 +17,7 @@ import { RefreshToken } from 'src/refresh-token/entities/refresh-token.entity';
 import { ResetToken } from 'src/reset-tokens/entities/reset-token.entity';
 import cuid from 'cuid';
 import { randomBytes } from 'crypto';
-
-
-
-
-
+import { MailService } from 'src/services/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -33,10 +29,8 @@ export class AuthService {
     private readonly resetTokenRepository: Repository<ResetToken>,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
-   
-
-   
     private jwtService: JwtService,
+    private mailService:MailService
   ) {}
   async create(createUserDto: CreateUserDto) {
     const { username, password, email } = createUserDto;
@@ -129,9 +123,7 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-
     // TO DO: COMPARE THE OLD PASSWORD WITH PASSWORD IN DB
-
     const passwordMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!passwordMatch) {
@@ -154,10 +146,9 @@ export class AuthService {
   }
 
   async forgotPassword(email:string){
-
     //TO DO: CHECK THAT USER EXIST
     const user= await this.userRepository.findOne({where:{email:email}})
-    console.log(user)
+  
 
     if(user){
            // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
@@ -173,21 +164,17 @@ export class AuthService {
           userId: user.id,
           expiryDate,
         });
+
+            // TODO: SEND THE LINK TO USER BY EMAIL (NODEMAILLER/SES:/ETC..)
+this.mailService.sendPasswordResetEmail(email,resetToken)
         console.log('Token saved successfully');
       } catch (error) {
         console.error('Error saving reset token:', error);
       }
-
     }
-
-    return {message:`Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`}
-
-  
-    // TODO: SEND THE LINK TO USER BY EMAIL (NODEMAILLER/SES:/ETC..)
-
-  
+    return {message:`Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`} 
   }
-
+  
   generateCustomToken() {
     const part1 = cuid(); // CUID pour la première partie
     const part2 = randomBytes(5).toString('hex'); // Chaîne aléatoire pour la deuxième partie
