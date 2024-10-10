@@ -15,4 +15,5 @@ export class Role {
     @OneToMany(()=>Permission,(permission)=>permission.role,{cascade:true})
     permissions:Permission[]
 
+
 }

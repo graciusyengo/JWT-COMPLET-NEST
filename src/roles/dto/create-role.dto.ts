@@ -2,6 +2,7 @@ import { ArrayUnique, IsEnum, IsString, ValidateNested } from "class-validator";
 import { Ressource } from "../enum/ressources.enum";
 import { Action } from "../enum/actions.emum";
 import { Type } from "class-transformer";
+import { CreatePermissionDto } from "src/permissions/dto/create-permission.dto";
 
 export class CreateRoleDto {
 
@@ -9,15 +10,7 @@ export class CreateRoleDto {
     name:string
 
     @ValidateNested()
-    @Type(()=>Permission)
-    permissi
-    on:Permission
+    @Type(()=>CreatePermissionDto)
+    permission:CreatePermissionDto
 }
-export class Permission{
-    @IsEnum(Ressource)
-    ressource:Ressource
 
-    @IsEnum(Action,{each:true})
-    @ArrayUnique()
-    actions:Action[]
-}

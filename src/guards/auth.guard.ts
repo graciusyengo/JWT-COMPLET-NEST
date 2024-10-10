@@ -40,4 +40,10 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     return request.headers.authorization?.split(' ')[1];
   }
+
+
+  //Create Role module with mnecessary methode
+  // create A custom @Permission decorator 
+
+  //Authorization Guard
 }

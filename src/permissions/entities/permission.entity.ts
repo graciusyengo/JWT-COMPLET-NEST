@@ -29,7 +29,6 @@ actions: string; // Stockez les actions sous forme de chaîne JSON
     return JSON.parse(this.actions);
    
 }
-
 // Méthode pour définir les actions à partir d'un tableau d'énumérations
 setActions(actions: Action[]): void {
     this.actions = JSON.stringify(actions);
