@@ -135,7 +135,6 @@ export class AuthService {
     user.password = newHashedPassword;
 
     const { password, ...result } = user;
-
     await this.userRepository.save(user);
     return {
       messages: {
@@ -148,7 +147,6 @@ export class AuthService {
   async forgotPassword(email:string){
     //TO DO: CHECK THAT USER EXIST
     const user= await this.userRepository.findOne({where:{email:email}})
-  
 
     if(user){
            // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
@@ -174,7 +172,7 @@ this.mailService.sendPasswordResetEmail(email,resetToken)
     }
     return {message:`Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`} 
   }
-  
+
   generateCustomToken() {
     const part1 = cuid(); // CUID pour la première partie
     const part2 = randomBytes(5).toString('hex'); // Chaîne aléatoire pour la deuxième partie

@@ -12,8 +12,12 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ResetTokensModule } from './reset-tokens/reset-tokens.module';
 import { ResetToken } from './reset-tokens/entities/reset-token.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { Role } from './roles/entities/role.entity';
+import { Permission } from './permissions/entities/permission.entity';
 
-
+  
 @Module({
   
   imports: [
@@ -27,7 +31,7 @@ TypeOrmModule.forRootAsync({
     username:configService.get<string>('DB_USERNAME'),
     password:configService.get<string>('DB_PASSWORD'),
     database:configService.get<string>('DB_DATABASE'),
-    entities: [User,RefreshToken,ResetToken],
+    entities: [User,RefreshToken,ResetToken,Role,Permission],
     synchronize: false,
   }),
   }),
@@ -40,7 +44,7 @@ TypeOrmModule.forRootAsync({
       },
     },
   }),
-  UsersModule, AuthModule, RefreshTokenModule, ResetTokensModule],
+  UsersModule, AuthModule, RefreshTokenModule, ResetTokensModule, RolesModule, PermissionsModule],
   controllers: [AppController],
   providers: [AppService,JwtService],
 })

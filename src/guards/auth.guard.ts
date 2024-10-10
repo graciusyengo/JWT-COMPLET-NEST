@@ -24,9 +24,7 @@ export class AuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException(`Token invalide`);
     }
-
     try {
-
         const secret= this.configService.get<string>('JWT_SECRET')
       const payload =  this.jwtService.verify(token,{secret});
       console.log('Payload:', payload); // Ajoute ceci pour vérifier si la vérification du token fonctionne
