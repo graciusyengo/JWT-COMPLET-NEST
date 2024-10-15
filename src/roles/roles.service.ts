@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 export class RolesService {
 
   constructor(@InjectRepository(Role) private readonly roleRepository:Repository<Role>){}
+  
  async create(createRoleDto: CreateRoleDto) {
     return  await this.roleRepository.create(createRoleDto)
   }

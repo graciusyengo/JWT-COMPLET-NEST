@@ -4,11 +4,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { Ressource } from './roles/enum/ressources.enum';
 import { Action } from './roles/enum/actions.emum';
 import { Permissions } from './decorators/permission.decorator';
-import { Authorization } from './guards/authorization.guard';
+import { AuthorizationGuard } from './guards/authorization.guard';
 
 
-
-@UseGuards(AuthGuard,Authorization)
+@UseGuards(AuthGuard,AuthorizationGuard)
 @Controller('create/agence')
 export class AppController {
   constructor(private readonly appService: AppService) {}

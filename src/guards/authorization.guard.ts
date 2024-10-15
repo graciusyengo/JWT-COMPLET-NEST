@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { PERMISSIONS_KEY } from 'src/decorators/permission.decorator';
 
 @Injectable()
-export class Authorization implements CanActivate {
+export class AuthorizationGuard implements CanActivate {
 
 
     constructor(private reflector:Reflector){}
