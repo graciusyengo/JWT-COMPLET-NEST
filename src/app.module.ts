@@ -21,6 +21,7 @@ import { Permission } from './permissions/entities/permission.entity';
 @Module({
   
   imports: [
+    
 TypeOrmModule.forRootAsync({
   imports:[ConfigModule],
   inject:[ConfigService],
@@ -32,7 +33,7 @@ TypeOrmModule.forRootAsync({
     password:configService.get<string>('DB_PASSWORD'),
     database:configService.get<string>('DB_DATABASE'),
     entities: [User,RefreshToken,ResetToken,Role,Permission],
-    synchronize: false,
+    synchronize:true,
   }),
   }),
   MailerModule.forRoot({

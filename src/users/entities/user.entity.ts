@@ -1,5 +1,6 @@
 import { IsEmail, Matches, MinLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from 'src/roles/entities/role.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
 
@@ -9,6 +10,7 @@ export class User {
   id: string;
   @Column()
   username: string;
+  
   @Column()
   @IsEmail({}, { message: "L'email doit être valide" })
   email: string;
@@ -19,4 +21,10 @@ export class User {
     message: 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial',
   })
   password: string;
+
+
+  @ManyToOne(()=>Role,(role)=>role.users)
+  role:Role
+
+
 }

@@ -18,34 +18,37 @@ import { ResetToken } from 'src/reset-tokens/entities/reset-token.entity';
 import cuid from 'cuid';
 import { randomBytes } from 'crypto';
 import { MailService } from 'src/services/mail.service';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AuthService {
   bcrypt: any;
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-
     @InjectRepository(ResetToken)
     private readonly resetTokenRepository: Repository<ResetToken>,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    private readonly roleService: RolesService,
     private jwtService: JwtService,
-    private mailService:MailService
+    private mailService: MailService,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const { username, password, email } = createUserDto;
-
+    const { username, password, email, roleId } = createUserDto;
     const searchEmail = await this.userRepository.findOne({ where: { email } });
     if (searchEmail) {
       throw new BadRequestException(`L'email deja utilisé`);
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const user = await this.userRepository.save({
+    const newUser = await this.userRepository.save({
       username,
       email,
       password: hashPassword,
+      role: { id: roleId },
     });
+
+    const user = await this.userRepository.save(newUser);
 
     delete user.password;
     return user;
@@ -144,15 +147,15 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(email:string){
+  async forgotPassword(email: string) {
     //TO DO: CHECK THAT USER EXIST
-    const user= await this.userRepository.findOne({where:{email:email}})
+    const user = await this.userRepository.findOne({ where: { email: email } });
 
-    if(user){
-           // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
+    if (user) {
+      // TODO: IF USER EXIST GENERATE DE RESET PASSWORD
       const resetToken = this.generateCustomToken();
-      const expiryDate= new Date()
-      expiryDate.setHours(expiryDate.getHours()+ 1 )
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 1);
       console.log(resetToken);
 
       try {
@@ -163,14 +166,16 @@ export class AuthService {
           expiryDate,
         });
 
-            // TODO: SEND THE LINK TO USER BY EMAIL (NODEMAILLER/SES:/ETC..)
-this.mailService.sendPasswordResetEmail(email,resetToken)
+        // TODO: SEND THE LINK TO USER BY EMAIL (NODEMAILLER/SES:/ETC..)
+        this.mailService.sendPasswordResetEmail(email, resetToken);
         console.log('Token saved successfully');
       } catch (error) {
         console.error('Error saving reset token:', error);
       }
     }
-    return {message:`Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`} 
+    return {
+      message: `Si l\'utilisateur existe, un email de réinitialisation a été envoyé.`,
+    };
   }
 
   generateCustomToken() {
@@ -178,5 +183,18 @@ this.mailService.sendPasswordResetEmail(email,resetToken)
     const part2 = randomBytes(5).toString('hex'); // Chaîne aléatoire pour la deuxième partie
     const part3 = cuid(); // CUID pour la troisième partie
     return `${part1}-${part2}-${part3}`;
+  }
+
+  async getUserPermission(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['role'], // Charger le rôle associé
+    });
+
+    if (!user) throw new BadRequestException('user pas trouvé');
+
+    const role = await this.roleService.getRoleById(user.role.id);
+
+    return role.permissions;
   }
 }

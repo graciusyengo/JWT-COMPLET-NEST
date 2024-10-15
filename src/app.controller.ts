@@ -11,7 +11,6 @@ import { AuthorizationGuard } from './guards/authorization.guard';
 @Controller('create/agence')
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
  @Permissions([{ressource:Ressource.agences,actions:[Action.create]}])
 
   @Get()

@@ -11,9 +11,13 @@ import { RefreshTokenModule } from 'src/refresh-token/refresh-token.module';
 import { ResetToken } from 'src/reset-tokens/entities/reset-token.entity';
 import { ResetTokensModule } from 'src/reset-tokens/reset-tokens.module';
 import { MailService } from 'src/services/mail.service';
+import { UsersModule } from 'src/users/users.module';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
+
+    RolesModule,
 
     ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
@@ -25,9 +29,10 @@ import { MailService } from 'src/services/mail.service';
     }),
   }),
     TypeOrmModule.forFeature([User,RefreshToken,ResetToken]),
-    ResetTokensModule,
+    ResetTokensModule
   ],
   controllers: [AuthController],
   providers: [AuthService,MailService],
+  exports:[AuthService]
 })
 export class AuthModule {}

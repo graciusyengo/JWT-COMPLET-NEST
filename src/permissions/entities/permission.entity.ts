@@ -23,7 +23,6 @@ ressource: Ressource;
 actions: string; // Stockez les actions sous forme de chaîne JSON
 
 
-
   // Méthode pour obtenir les actions sous forme de tableau d'énumérations
   getActions(): Action[] {
     return JSON.parse(this.actions);
